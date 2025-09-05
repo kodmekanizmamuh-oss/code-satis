@@ -34,25 +34,25 @@ footer { text-align:center; padding:20px; margin-top:30px; background:#0f0c29; c
 <!-- Ana Sayfa -->
 <div id="home" class="section" style="display:block; text-align:center;">
 <h2>Hoşgeldiniz!</h2>
-<p>Kodları görüntülemek veya admin girişi yapmak için butonlara tıklayın.</p>
-<button onclick="show('lessons')">Kodlara Git</button>
-<button onclick="show('admin')">Admin Girişi</button>
+<p>Popüler kodları görüntülemek veya admin girişi yapmak için butonlara tıklayın.</p>
+<button onclick="show('categories')">Kod Kategorilerine Git</button>
+<button onclick="show('admin')">Admin Paneli</button>
 </div>
 
-<!-- Kodlar -->
-<div id="lessons" class="section">
+<!-- Kod Kategorileri -->
+<div id="categories" class="section">
 <h2>📂 Kod Kategorileri</h2>
-<div id="categories" class="info-box"></div>
-<div id="lessonsList" class="info-box" style="flex-direction:column;"></div>
+<div id="categoryList" class="info-box"></div>
+<div id="codeList" class="info-box" style="flex-direction:column;"></div>
 <button onclick="show('home')">← Ana Sayfaya Dön</button>
 
-<h2>💳 Satın Alma & İletişim</h2>
+<h2>💳 Satın Alma</h2>
 <div class="info-box" style="flex-direction:column; align-items:flex-start;">
 <div style="display:flex; justify-content:space-between; align-items:center; width:100%; margin-bottom:10px;">
 <span><b>IBAN:</b> <span id="iban">TR98000670100000022363236</span></span>
 <button onclick="copyIban()">Kopyala</button>
 </div>
-<small>Ödeme açıklamasına <i>Satın aldığınız kodun adını</i> yazınız.</small>
+<small>Ödeme açıklamasına <i>Satın aldığınız kodun adını yazınız</i> yazınız.</small>
 </div>
 </div>
 
@@ -66,9 +66,9 @@ footer { text-align:center; padding:20px; margin-top:30px; background:#0f0c29; c
 <div id="lessonAdd" style="display:none; margin-top:15px;">
 <input type="text" id="lessonName" placeholder="Kod adı">
 <select id="lessonCategory">
-<option>JavaScript</option><option>Python</option><option>HTML/CSS</option><option>Java</option>
-<option>Office</option><option>To-Do App</option><option>Slider Carousel</option>
-<option>PDF / ZIP Satın Al</option>
+<option>JavaScript</option><option>Python</option><option>HTML/CSS</option>
+<option>Java</option><option>Office</option><option>Excel Dashboard</option>
+<option>Word Template</option>
 </select>
 <input type="text" id="lessonPDF" placeholder="Dosya adı (kodlar/ klasörü içinde)">
 <button onclick="addLesson()">Kod Ekle</button>
@@ -82,49 +82,57 @@ footer { text-align:center; padding:20px; margin-top:30px; background:#0f0c29; c
 <footer>© 2025 CODE STORE</footer>
 
 <script>
-function show(id){
-    document.querySelectorAll('.section').forEach(s=>s.style.display='none');
-    document.getElementById(id).style.display='block';
-}
-
-function copyIban(){
-    navigator.clipboard.writeText(document.getElementById("iban").innerText)
-    .then(()=>alert("IBAN kopyalandı"));
-}
-
-// Önceden seçilmiş popüler kodlar
-let lessons = [
-  {kategori:"JavaScript", isim:"To-Do List App", pdf:"kodlar/js-todo.zip"},
-  {kategori:"JavaScript", isim:"Calculator", pdf:"kodlar/js-calculator.zip"},
-  {kategori:"JavaScript", isim:"Weather App", pdf:"kodlar/js-weather.zip"},
-  {kategori:"Python", isim:"Web Scraper", pdf:"kodlar/python-scraper.zip"},
-  {kategori:"Python", isim:"Chatbot", pdf:"kodlar/python-chatbot.zip"},
-  {kategori:"Python", isim:"Data Analysis Script", pdf:"kodlar/python-data.zip"},
-  {kategori:"HTML/CSS", isim:"Portfolio Website", pdf:"kodlar/html-portfolio.zip"},
-  {kategori:"HTML/CSS", isim:"Responsive Landing Page", pdf:"kodlar/html-landing.zip"},
-  {kategori:"Java", isim:"Bank Management System", pdf:"kodlar/java-bank.zip"},
-  {kategori:"Java", isim:"Student Management System", pdf:"kodlar/java-student.zip"},
-  {kategori:"Office", isim:"Excel Automation Script", pdf:"kodlar/excel-automation.zip"},
-  {kategori:"Office", isim:"Word Template Generator", pdf:"kodlar/word-template.zip"},
-  {kategori:"To-Do App", isim:"Task Manager App", pdf:"kodlar/todo-taskmanager.zip"},
-  {kategori:"Slider Carousel", isim:"Image Slider JS", pdf:"kodlar/slider-js.zip"},
-  {kategori:"PDF / ZIP Satın Al", isim:"Full Website Template Pack", pdf:"kodlar/full-website.zip"},
-  {kategori:"PDF / ZIP Satın Al", isim:"E-Commerce Template Pack", pdf:"kodlar/ecommerce.zip"}
+function show(id){ document.querySelectorAll('.section').forEach(s=>s.style.display='none'); document.getElementById(id).style.display='block'; }
+function copyIban(){navigator.clipboard.writeText(document.getElementById("iban").innerText).then(()=>alert("IBAN kopyalandı"));}
+let codes = [
+{kategori:"JavaScript",isim:"To-Do List",pdf:"kodlar/todolist.zip"},
+{kategori:"Python",isim:"Web Scraper",pdf:"kodlar/webscraper.zip"},
+{kategori:"HTML/CSS",isim:"Landing Page",pdf:"kodlar/landingpage.zip"},
+{kategori:"Java",isim:"Calculator App",pdf:"kodlar/calculator.zip"},
+{kategori:"Office",isim:"Excel Dashboard",pdf:"kodlar/exceldashboard.zip"},
+{kategori:"Office",isim:"Word Template",pdf:"kodlar/wordtemplate.zip"}
 ];
-
-// Kategorileri ve kodları listele
-function updateCategories(){
-    const catDiv=document.getElementById("categories");
-    catDiv.innerHTML="";
-    let cats=[...new Set(lessons.map(l=>l.kategori))];
-    cats.forEach(c=>{
-        let b=document.createElement("button");
-        b.className="category-btn";
-        b.innerText=c;
-        b.onclick=()=>showLessons(c);
-        catDiv.appendChild(b);
-    });
+function updateCategories(){ 
+const catDiv=document.getElementById("categoryList"); 
+catDiv.innerHTML=""; 
+let cats=[...new Set(codes.map(l=>l.kategori))]; 
+cats.forEach(c=>{ 
+let b=document.createElement("button"); 
+b.className="category-btn"; 
+b.innerText=c; 
+b.onclick=()=>showCodes(c); 
+catDiv.appendChild(b); 
+}); 
 }
+function showCodes(cat){ 
+const listDiv=document.getElementById("codeList"); 
+listDiv.innerHTML=""; 
+codes.filter(l=>l.kategori===cat).forEach(l=>{ 
+let div=document.createElement("div"); 
+div.className="lesson"; 
+let nameSpan=document.createElement("span"); 
+nameSpan.innerText=l.isim; 
+nameSpan.onclick=()=>window.open(l.pdf,"_blank"); 
+let buyBtn=document.createElement("button"); 
+buyBtn.innerText="Satın Al"; 
+buyBtn.onclick=()=>window.open(l.pdf,"_blank"); 
+div.appendChild(nameSpan); div.appendChild(buyBtn); listDiv.appendChild(div); 
+}); 
+}
+function loginAdmin(){ 
+const pass=document.getElementById("adminPass").value; 
+if(pass==="2332"){ document.getElementById("loginResult").style.color="lime"; document.getElementById("loginResult").innerText="✅ Giriş başarılı!"; document.getElementById("lessonAdd").style.display="block"; } 
+else{ document.getElementById("loginResult").style.color="red"; document.getElementById("loginResult").innerText="❌ Hatalı şifre!"; } 
+}
+function addLesson(){ 
+const name=document.getElementById("lessonName").value.trim(); 
+const cat=document.getElementById("lessonCategory").value; 
+const pdf=document.getElementById("lessonPDF").value.trim(); 
+if(name && pdf){ codes.push({kategori:cat,isim:name,pdf:pdf}); updateCategories(); alert("Kod eklendi!"); document.getElementById("lessonName").value=""; document.getElementById("lessonPDF").value=""; } 
+else{ alert("Lütfen kod adı ve dosya adını girin!"); } 
+}
+window.onload=()=>updateCategories();
+</script>
 
-// Seçilen kategoriye göre
-
+</body>
+</html>
