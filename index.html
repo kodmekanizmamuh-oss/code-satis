@@ -34,10 +34,8 @@ footer { text-align:center; padding:20px; margin-top:30px; background:#0f0c29; c
 
 <!-- Ana Sayfa -->
 <div id="home" class="section" style="display:block; text-align:center;">
-<h2>Hoşgeldiniz!</h2>
-<p>Kod satış portalımıza hoşgeldiniz. Kodları görüntülemek veya satın almak için aşağıdaki butonlara tıklayın.</p>
+<h2>KOD SATIŞ PORTALIMIZA HOŞGELDİNİZ</h2>
 <button class="button" onclick="show('categories')">Kodlara Git</button>
-<button class="button" onclick="showAdminPrompt()">Admin Girişi (Sadece Sen Görebilirsin)</button>
 </div>
 
 <!-- Kod Kategorileri -->
@@ -123,16 +121,17 @@ function showCodes(cat){
     });
 }
 
-// Gizli admin girişi
+// Admin paneli sadece şifreyle açılır
 function showAdminPrompt(){
     let pw = prompt("Admin paneline giriş için şifreyi gir:");
-    if(pw === "2332"){ // sadece senin bildiğin şifre
+    if(pw === "2332"){
         show("adminPanel");
     } else {
         alert("Hatalı şifre!");
     }
 }
 
+// Sayfa yüklenince kategorileri oluştur
 window.onload = ()=>updateCategories();
 </script>
 
