@@ -15,14 +15,14 @@ button, .category-btn { cursor:pointer; transition: all 0.3s ease; border:none; 
 button:hover, .category-btn:hover { transform: translateY(-8px) scale(1.1); box-shadow:0 0 20px #0ff,0 0 40px #0ff,0 0 60px #0ff;}
 @keyframes float { 0%,100% {transform: translateY(0);} 50% {transform: translateY(-8px);} }
 .section { display:none; }
-.lesson { display:flex; justify-content:space-between; align-items:center; padding:12px; margin:8px 0; background:rgba(0,255,255,0.1); border-radius:12px; box-shadow:0 0 10px #0ff; transition:0.3s; }
-.lesson span { cursor:pointer; font-weight:600; color:#0ff; text-decoration:underline; }
-.lesson span:hover { color:#fff; text-shadow:0 0 10px #0ff; }
+.item { display:flex; justify-content:space-between; align-items:center; padding:12px; margin:8px 0; background:rgba(0,255,255,0.1); border-radius:12px; box-shadow:0 0 10px #0ff; transition:0.3s; }
+.item span { cursor:pointer; font-weight:600; color:#0ff; text-decoration:underline; }
+.item span:hover { color:#fff; text-shadow:0 0 10px #0ff; }
 .info-box { padding:18px; border-radius:12px; margin-bottom:25px; background: rgba(0,0,0,0.3); box-shadow:0 0 15px #0ff; display:flex; flex-wrap:wrap; justify-content:center;}
 input, select { padding:10px; border-radius:8px; border:1px solid #0ff; margin-right:10px; background:rgba(0,0,0,0.5); color:white; }
 .admin-box { background: rgba(0,0,0,0.5); border:1px solid #0ff; padding:18px; border-radius:12px; margin-bottom:25px; box-shadow:0 0 15px #0ff; text-align:center;}
 footer { text-align:center; padding:20px; margin-top:30px; background:#0f0c29; color:#0ff; border-radius:0 0 20px 20px; font-weight:700; font-size:15px;}
-@media (max-width:768px){ .lesson { flex-direction:column; align-items:flex-start; } .category-btn, button{ width:100%; margin:6px 0; } input, select{ width:100%; margin:6px 0; }}
+@media (max-width:768px){ .item { flex-direction:column; align-items:flex-start; } .category-btn, button{ width:100%; margin:6px 0; } input, select{ width:100%; margin:6px 0; }}
 </style>
 </head>
 <body>
@@ -34,7 +34,7 @@ footer { text-align:center; padding:20px; margin-top:30px; background:#0f0c29; c
 <!-- Ana Sayfa -->
 <div id="home" class="section" style="display:block; text-align:center;">
 <h2>Hoşgeldiniz!</h2>
-<p>Satışa sunulan kodları görüntülemek veya admin girişi yapmak için butonlara tıklayın.</p>
+<p>Satın alınabilir kodları görüntülemek veya admin girişi yapmak için butonlara tıklayın.</p>
 <button onclick="show('codes')">Kodlara Git</button>
 <button onclick="show('admin')">Admin Girişi</button>
 </div>
@@ -66,14 +66,7 @@ footer { text-align:center; padding:20px; margin-top:30px; background:#0f0c29; c
 <div id="codeAdd" style="display:none; margin-top:15px;">
 <input type="text" id="codeName" placeholder="Kod adı">
 <select id="codeCategory">
-<option>JavaScript</option>
-<option>Python</option>
-<option>HTML/CSS</option>
-<option>Java</option>
-<option>Office</option>
-<option>To-Do App</option>
-<option>PDF / ZIP Satın Al</option>
-<option>Slider Carousel</option>
+<option>JavaScript</option><option>Python</option><option>HTML/CSS</option><option>Java</option><option>Office</option><option>PDF/ZIP</option><option>To-Do App</option><option>Slider Carousel</option>
 </select>
 <input type="text" id="codeFile" placeholder="Dosya adı (kodlar/ klasörü içinde)">
 <button onclick="addCode()">Kod Ekle</button>
@@ -88,76 +81,41 @@ footer { text-align:center; padding:20px; margin-top:30px; background:#0f0c29; c
 
 <script>
 function show(id){ document.querySelectorAll('.section').forEach(s=>s.style.display='none'); document.getElementById(id).style.display='block'; }
-function copyIban(){navigator.clipboard.writeText(document.getElementById("iban").innerText).then(()=>alert("IBAN kopyalandı"));}
+function copyIban(){ navigator.clipboard.writeText(document.getElementById("iban").innerText).then(()=>alert("IBAN kopyalandı")); }
 
 let codes = [
-{kategori:"JavaScript",isim:"Örnek JS Kod",file:"kodlar/js1.zip"},
-{kategori:"Python",isim:"Örnek Python Kod",file:"kodlar/py1.zip"},
-{kategori:"HTML/CSS",isim:"Örnek Web Template",file:"kodlar/htmlcss1.zip"},
-{kategori:"Java",isim:"Örnek Java Kod",file:"kodlar/java1.zip"},
-{kategori:"Office",isim:"Excel Dashboard",file:"kodlar/excel1.zip"},
-{kategori:"PDF / ZIP Satın Al",isim:"Word Template",file:"kodlar/word1.zip"}
+{kategori:"JavaScript",isim:"JS Game",file:"kodlar/js-game.zip"},
+{kategori:"JavaScript",isim:"JS Calculator",file:"kodlar/js-calculator.zip"},
+{kategori:"Python",isim:"Python Script",file:"kodlar/python-script.zip"},
+{kategori:"Python",isim:"Python Bot",file:"kodlar/python-bot.zip"},
+{kategori:"HTML/CSS",isim:"Web Template",file:"kodlar/web-template.zip"},
+{kategori:"HTML/CSS",isim:"Landing Page",file:"kodlar/landing-page.zip"},
+{kategori:"Java",isim:"Java App",file:"kodlar/java-app.zip"},
+{kategori:"Java",isim:"Java Game",file:"kodlar/java-game.zip"},
+{kategori:"Office",isim:"Excel Dashboard",file:"kodlar/excel-dashboard.xlsx"},
+{kategori:"Office",isim:"Word Template",file:"kodlar/word-template.docx"},
+{kategori:"PDF/ZIP",isim:"Complete Project",file:"kodlar/complete-project.zip"},
+{kategori:"To-Do App",isim:"To-Do List",file:"kodlar/todo-list.zip"},
+{kategori:"Slider Carousel",isim:"Image Slider",file:"kodlar/image-slider.zip"}
 ];
 
-function updateCategories(){ 
-const catDiv=document.getElementById("categories"); catDiv.innerHTML=""; 
-let cats=[...new Set(codes.map(c=>c.kategori))]; 
-cats.forEach(c=>{ 
-let b=document.createElement("button"); 
-b.className="category-btn"; 
-b.innerText=c; 
-b.onclick=()=>showCodes(c); 
-catDiv.appendChild(b); 
-}); 
+function updateCategories(){
+const catDiv=document.getElementById("categories");
+catDiv.innerHTML="";
+let cats=[...new Set(codes.map(c=>c.kategori))];
+cats.forEach(c=>{
+let b=document.createElement("button");
+b.className="category-btn";
+b.innerText=c;
+b.onclick=()=>showCodes(c);
+catDiv.appendChild(b);
+});
 }
 
-function showCodes(cat){ 
-const listDiv=document.getElementById("codesList"); 
-listDiv.innerHTML=""; 
-codes.filter(c=>c.kategori===cat).forEach(c=>{ 
-let div=document.createElement("div"); 
-div.className="lesson"; 
-let nameSpan=document.createElement("span"); 
-nameSpan.innerText=c.isim; 
-nameSpan.onclick=()=>window.open(c.file,"_blank"); 
-let buyBtn=document.createElement("button"); 
-buyBtn.innerText="Satın Al"; 
-buyBtn.onclick=()=>window.open(c.file,"_blank"); 
-div.appendChild(nameSpan); 
-div.appendChild(buyBtn); 
-listDiv.appendChild(div); 
-}); 
-}
-
-function loginAdmin(){ 
-const pass=document.getElementById("adminPass").value; 
-if(pass==="2332"){ 
-document.getElementById("loginResult").style.color="lime"; 
-document.getElementById("loginResult").innerText="✅ Giriş başarılı!"; 
-document.getElementById("codeAdd").style.display="block"; 
-}else{ 
-document.getElementById("loginResult").style.color="red"; 
-document.getElementById("loginResult").innerText="❌ Hatalı şifre!"; 
-} 
-}
-
-function addCode(){ 
-const name=document.getElementById("codeName").value.trim(); 
-const cat=document.getElementById("codeCategory").value; 
-const file=document.getElementById("codeFile").value.trim(); 
-if(name && file){ 
-codes.push({kategori:cat,isim:name,file:file}); 
-updateCategories(); 
-alert("Kod eklendi!"); 
-document.getElementById("codeName").value=""; 
-document.getElementById("codeFile").value=""; 
-}else{ 
-alert("Lütfen kod adı ve dosya adını girin!"); 
-} 
-}
-
-window.onload=()=>updateCategories();
-</script>
-
-</body>
-</html>
+function showCodes(cat){
+const listDiv=document.getElementById("codesList");
+listDiv.innerHTML="";
+codes.filter(c=>c.kategori===cat).forEach(c=>{
+let div=document.createElement("div"); div.className="item";
+let nameSpan=document.createElement("span"); nameSpan.innerText=c.isim; nameSpan.onclick=()=>window.open(c.file,"_blank");
+let buyBtn=document.createElement("button"); buyBtn.innerText="Satın Al"; buyBtn.onclick=()=>window.open(c.file,"
