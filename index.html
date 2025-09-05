@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CODE STORE</title>
+<title>💻 CODE STORE</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
 body { font-family:'Montserrat',sans-serif; margin:0; background: linear-gradient(135deg,#0f0c29,#302b63,#24243e); color:white;}
@@ -33,17 +33,19 @@ footer { text-align:center; padding:20px; margin-top:30px; background:#0f0c29; c
 
 <!-- Ana Sayfa -->
 <div id="home" class="section" style="display:block; text-align:center;">
-<h2>Hoşgeldiniz!</h2>
-<p>Kod satış portalımıza hoşgeldiniz. Kodları görüntülemek veya admin girişi yapmak için butonlara tıklayın.</p>
-<button onclick="show('codes')">Kodlara Git</button>
+<h2>📂 Kod Kategorileri</h2>
+<p>Butonlara tıklayarak kodları görüntüleyebilir veya admin panelinden yeni kod ekleyebilirsiniz.</p>
+<div>
+<button onclick="show('categoriesSection')">Kategorilere Git</button>
 <button onclick="show('admin')">Admin Girişi</button>
 </div>
+</div>
 
-<!-- Kodlar -->
-<div id="codes" class="section">
-<h2>📂 Kod Kategorileri</h2>
+<!-- Kategoriler ve Kod Listesi -->
+<div id="categoriesSection" class="section">
+<h2>📂 Kategoriler</h2>
 <div id="categories" class="info-box"></div>
-<div id="codesList" class="info-box" style="flex-direction:column;"></div>
+<div id="lessonsList" class="info-box" style="flex-direction:column;"></div>
 <button onclick="show('home')">← Ana Sayfaya Dön</button>
 </div>
 
@@ -54,15 +56,16 @@ footer { text-align:center; padding:20px; margin-top:30px; background:#0f0c29; c
 <input type="password" id="adminPass" placeholder="Şifreyi gir">
 <button onclick="loginAdmin()">Giriş Yap</button>
 <p id="loginResult" style="color:red;"></p>
-<div id="codeAdd" style="display:none; margin-top:15px;">
-<input type="text" id="codeName" placeholder="Kod Adı">
-<select id="codeCategory">
+<div id="lessonAdd" style="display:none; margin-top:15px;">
+<input type="text" id="lessonName" placeholder="Kod Adı">
+<select id="lessonCategory">
 <option>JavaScript</option><option>Python</option><option>HTML/CSS</option><option>Java</option>
 </select>
-<input type="text" id="codeFile" placeholder="Dosya adı (kodlar/ klasörü içinde)">
-<button onclick="addCode()">Kod Ekle</button>
+<input type="text" id="lessonPDF" placeholder="Dosya adı (kodlar/ klasörü içinde)">
+<button onclick="addLesson()">Kod Ekle</button>
 </div>
 <button onclick="show('home')">← Ana Sayfaya Dön</button>
+</div>
 </div>
 
 </div>
@@ -70,79 +73,43 @@ footer { text-align:center; padding:20px; margin-top:30px; background:#0f0c29; c
 <footer>© 2025 CODE STORE</footer>
 
 <script>
-function show(id){
-    document.querySelectorAll('.section').forEach(s=>s.style.display='none');
-    document.getElementById(id).style.display='block';
-}
-
-let codes = [
-{kategori:"JavaScript", isim:"JS Slider", file:"kodlar/js-slider.zip"},
-{kategori:"Python", isim:"Python ChatBot", file:"kodlar/python-chatbot.zip"},
-{kategori:"HTML/CSS", isim:"Landing Page", file:"kodlar/landing-page.zip"},
-{kategori:"Java", isim:"Java TicTacToe", file:"kodlar/java-tictactoe.zip"}
+function show(id){ document.querySelectorAll('.section').forEach(s=>s.style.display='none'); document.getElementById(id).style.display='block'; }
+let lessons=[
+{kategori:"JavaScript",isim:"Navbar",pdf:"kodlar/navbar.js"},
+{kategori:"Python",isim:"Oyun",pdf:"kodlar/game.py"},
+{kategori:"HTML/CSS",isim:"Portfolyo",pdf:"kodlar/portfolio.html"},
+{kategori:"Java",isim:"Calculator",pdf:"kodlar/calculator.java"}
 ];
-
 function updateCategories(){
-    const catDiv=document.getElementById("categories");
-    catDiv.innerHTML="";
-    let cats=[...new Set(codes.map(c=>c.kategori))];
-    cats.forEach(c=>{
-        let b=document.createElement("button");
-        b.className="category-btn";
-        b.innerText=c;
-        b.onclick=()=>showCodes(c);
-        catDiv.appendChild(b);
-    });
+const catDiv=document.getElementById("categories"); catDiv.innerHTML="";
+let cats=[...new Set(lessons.map(l=>l.kategori))];
+cats.forEach(c=>{
+let b=document.createElement("button"); b.className="category-btn"; b.innerText=c; b.onclick=()=>showLessons(c); catDiv.appendChild(b);
+});
 }
-
-function showCodes(cat){
-    const listDiv=document.getElementById("codesList");
-    listDiv.innerHTML="";
-    codes.filter(c=>c.kategori===cat).forEach(c=>{
-        let div=document.createElement("div");
-        div.className="lesson";
-        let nameSpan=document.createElement("span");
-        nameSpan.innerText=c.isim;
-        nameSpan.onclick=()=>window.open(c.file,"_blank");
-        let buyBtn=document.createElement("button");
-        buyBtn.innerText="Satın Al";
-        buyBtn.onclick=()=>window.open(c.file,"_blank");
-        div.appendChild(nameSpan);
-        div.appendChild(buyBtn);
-        listDiv.appendChild(div);
-    });
+function showLessons(cat){
+const listDiv=document.getElementById("lessonsList"); listDiv.innerHTML="";
+lessons.filter(l=>l.kategori===cat).forEach(l=>{
+let div=document.createElement("div"); div.className="lesson";
+let nameSpan=document.createElement("span"); nameSpan.innerText=l.isim; nameSpan.onclick=()=>window.open(l.pdf,"_blank");
+let buyBtn=document.createElement("button"); buyBtn.innerText="Kod Satın Al"; buyBtn.onclick=()=>window.open(l.pdf,"_blank");
+div.appendChild(nameSpan); div.appendChild(buyBtn); listDiv.appendChild(div);
+});
 }
-
 function loginAdmin(){
-    const pass=document.getElementById("adminPass").value;
-    if(pass==="1234"){
-        document.getElementById("loginResult").style.color="lime";
-        document.getElementById("loginResult").innerText="✅ Giriş başarılı!";
-        document.getElementById("codeAdd").style.display="block";
-    }else{
-        document.getElementById("loginResult").style.color="red";
-        document.getElementById("loginResult").innerText="❌ Hatalı şifre!";
-    }
+const pass=document.getElementById("adminPass").value;
+if(pass==="1234"){ document.getElementById("loginResult").style.color="lime"; document.getElementById("loginResult").innerText="✅ Giriş başarılı!"; document.getElementById("lessonAdd").style.display="block";}
+else{ document.getElementById("loginResult").style.color="red"; document.getElementById("loginResult").innerText="❌ Hatalı şifre!";}
 }
-
-function addCode(){
-    const name=document.getElementById("codeName").value.trim();
-    const cat=document.getElementById("codeCategory").value;
-    const file=document.getElementById("codeFile").value.trim();
-    if(name && file){
-        codes.push({kategori:cat,isim:name,file:file});
-        updateCategories();
-        alert("Kod eklendi!");
-        document.getElementById("codeName").value="";
-        document.getElementById("codeFile").value="";
-    }else{
-        alert("Lütfen kod adı ve dosya adını girin!");
-    }
+function addLesson(){
+const name=document.getElementById("lessonName").value.trim();
+const cat=document.getElementById("lessonCategory").value;
+const pdf=document.getElementById("lessonPDF").value.trim();
+if(name && pdf){ lessons.push({kategori:cat,isim:name,pdf:pdf}); updateCategories(); alert("Kod eklendi!"); document.getElementById("lessonName").value=""; document.getElementById("lessonPDF").value="";}
+else{ alert("Lütfen Kod Adı ve Dosya adını girin!");}
 }
-
 window.onload=()=>updateCategories();
 </script>
 
 </body>
 </html>
-
