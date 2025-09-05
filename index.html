@@ -20,7 +20,7 @@ h2 { color:#0ff; text-align:center; text-shadow:0 0 10px #0ff; }
 .code-item span { display:block; font-weight:600; color:#0ff; margin-bottom:10px; }
 .code-item button { background:#0ff; color:#000; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; }
 .code-item button:hover { background:#0ff; box-shadow:0 0 15px #0ff,0 0 30px #0ff; }
-.info-box { padding:18px; border-radius:12px; margin-bottom:25px; background: rgba(0,0,0,0.3); box-shadow:0 0 15px #0ff; text-align:center;}
+input { padding:8px; border-radius:6px; border:1px solid #0ff; margin:5px; background:rgba(0,0,0,0.5); color:white; }
 footer { text-align:center; padding:20px; margin-top:30px; background:#0f0c29; color:#0ff; border-radius:0 0 20px 20px; font-weight:700; font-size:15px;}
 @media (max-width:768px){ .code-item { width:100%; margin:10px 0; }}
 </style>
@@ -35,6 +35,7 @@ footer { text-align:center; padding:20px; margin-top:30px; background:#0f0c29; c
 <div id="home" class="section" style="display:block; text-align:center;">
 <h2>KOD SATIŞ PORTALIMIZA HOŞGELDİNİZ</h2>
 <button class="button" onclick="show('categories')">Kodlara Git</button>
+<button class="button" onclick="promptAdmin()">Admin Paneli</button>
 </div>
 
 <!-- Kod Kategorileri -->
@@ -44,20 +45,27 @@ footer { text-align:center; padding:20px; margin-top:30px; background:#0f0c29; c
 <button class="button" onclick="show('home')">← Ana Sayfaya Dön</button>
 </div>
 
-<!-- Satın Alma -->
-<div id="purchase" class="section">
-<h2>💳 Satın Alma</h2>
-<div class="info-box">
-<div><b>IBAN:</b> <span id="iban">TR98000670100000022363236</span> <button onclick="copyIban()">Kopyala</button></div>
-<small>Ödeme açıklamasına satın aldığınız kodun adını yazınız.</small>
-</div>
-<button class="button" onclick="show('home')">← Ana Sayfaya Dön</button>
-</div>
-
 <!-- Gizli Admin Paneli -->
 <div id="adminPanel" class="section">
 <h2>🔑 Admin Paneli</h2>
-<p>Buraya sadece sen giriş yapabilirsin.</p>
+<div style="margin-bottom:20px;">
+<label>IBAN:</label>
+<input type="text" id="iban" value="TR98000670100000022363236" readonly>
+<button onclick="copyIban()">Kopyala</button>
+</div>
+<div style="margin-bottom:20px;">
+<label>Kod Adı:</label>
+<input type="text" id="codeName" placeholder="Kod adı">
+<select id="codeCategory">
+<option>JavaScript</option>
+<option>Python</option>
+<option>HTML/CSS</option>
+<option>Java</option>
+<option>Office</option>
+</select>
+<input type="text" id="codeFile" placeholder="Dosya adı (kodlar/ içinde)">
+<button onclick="addCode()">Kod Ekle</button>
+</div>
 <button class="button" onclick="show('home')">← Ana Sayfaya Dön</button>
 </div>
 
@@ -72,17 +80,17 @@ function show(id){
 }
 
 function copyIban(){
-    navigator.clipboard.writeText(document.getElementById("iban").innerText)
-    .then(()=>alert("IBAN kopyalandı: " + document.getElementById("iban").innerText));
+    navigator.clipboard.writeText(document.getElementById("iban").value)
+    .then(()=>alert("IBAN kopyalandı: " + document.getElementById("iban").value));
 }
 
 // Kod kategorileri
-const codes = [
+let codes = [
 {kategori:"JavaScript", isim:"JS Login Form", dosya:"kodlar/js-login-form.zip"},
 {kategori:"Python", isim:"Python Web Scraper", dosya:"kodlar/python-scraper.zip"},
 {kategori:"HTML/CSS", isim:"Responsive Portfolio", dosya:"kodlar/portfolio.zip"},
 {kategori:"Java", isim:"Java Calculator", dosya:"kodlar/java-calculator.zip"},
-{kategori:"Office", isim:"Excel Dashboard", dosya:"kodlar/excel-dashboard.zip"},
+{kategori:"Office", isim:"Excel Dashboard", dosya:"kodlar/excel-dashboard.zip"}
 ];
 
 function updateCategories(){
@@ -120,17 +128,33 @@ function showCodes(cat){
     });
 }
 
-// Admin paneli sadece şifreyle açılır
-function showAdminPrompt(){
-    let pw = prompt("Admin paneline giriş için şifreyi gir:");
-    if(pw === "2332"){
+// Admin paneli şifre ile açılır
+function promptAdmin(){
+    const pw = prompt("Admin paneli şifresi:");
+    if(pw==="2332"){
         show("adminPanel");
     } else {
         alert("Hatalı şifre!");
     }
 }
 
-// Sayfa yüklenince kategorileri oluştur
+// Admin yeni kod ekler
+function addCode(){
+    const name=document.getElementById("codeName").value.trim();
+    const cat=document.getElementById("codeCategory").value;
+    const file=document.getElementById("codeFile").value.trim();
+    if(name && file){
+        codes.push({kategori:cat,isim:name,dosya:file});
+        updateCategories();
+        alert("Kod eklendi!");
+        document.getElementById("codeName").value="";
+        document.getElementById("codeFile").value="";
+    } else {
+        alert("Kod adı ve dosya adı girin!");
+    }
+}
+
+// Sayfa yüklendiğinde kategorileri oluştur
 window.onload = ()=>updateCategories();
 </script>
 
