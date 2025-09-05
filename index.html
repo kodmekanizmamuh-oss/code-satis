@@ -195,29 +195,3 @@ function loginAdmin(){
         document.getElementById("codeAdd").style.display="block";
     }else{
         document.getElementById("loginResult").style.color="red";
-        document.getElementById("loginResult").innerText="❌ Hatalı şifre!";
-    }
-}
-
-// Kod ekleme
-function addCode(){
-    const name=document.getElementById("codeName").value.trim();
-    const cat=document.getElementById("codeCategory").value;
-    const file=document.getElementById("codeFile").value.trim();
-    if(name && file){
-        codes.push({kategori:cat,isim:name,dosya:file});
-        updateCategories();
-        alert("Kod eklendi!");
-        document.getElementById("codeName").value="";
-        document.getElementById("codeFile").value="";
-    }else{
-        alert("Lütfen kod adı ve dosya adını girin!");
-    }
-}
-
-// Sayfa yüklendiğinde kategorileri oluştur
-window.onload=()=>updateCategories();
-</script>
-
-</body>
-</html>
