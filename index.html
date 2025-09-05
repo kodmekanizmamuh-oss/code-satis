@@ -34,16 +34,16 @@ footer { text-align:center; padding:20px; margin-top:30px; background:#0f0c29; c
 <!-- Ana Sayfa -->
 <div id="home" class="section" style="display:block; text-align:center;">
 <h2>Hoşgeldiniz!</h2>
-<p>Popüler kodları görüntülemek veya admin girişi yapmak için butonlara tıklayın.</p>
-<button onclick="show('categories')">Kod Kategorilerine Git</button>
-<button onclick="show('admin')">Admin Paneli</button>
+<p>Popüler kodları görüntüleyebilir veya admin girişi yapabilirsiniz.</p>
+<button onclick="show('codes')">Kodlara Git</button>
+<button onclick="show('admin')">Admin Girişi</button>
 </div>
 
-<!-- Kod Kategorileri -->
-<div id="categories" class="section">
+<!-- Kodlar -->
+<div id="codes" class="section">
 <h2>📂 Kod Kategorileri</h2>
-<div id="categoryList" class="info-box"></div>
-<div id="codeList" class="info-box" style="flex-direction:column;"></div>
+<div id="categories" class="info-box"></div>
+<div id="codesList" class="info-box" style="flex-direction:column;"></div>
 <button onclick="show('home')">← Ana Sayfaya Dön</button>
 
 <h2>💳 Satın Alma</h2>
@@ -52,7 +52,7 @@ footer { text-align:center; padding:20px; margin-top:30px; background:#0f0c29; c
 <span><b>IBAN:</b> <span id="iban">TR98000670100000022363236</span></span>
 <button onclick="copyIban()">Kopyala</button>
 </div>
-<small>Ödeme açıklamasına <i>Satın aldığınız kodun adını yazınız</i> yazınız.</small>
+<small>Ödeme açıklamasına satın aldığınız kodun adını yazınız.</small>
 </div>
 </div>
 
@@ -63,15 +63,13 @@ footer { text-align:center; padding:20px; margin-top:30px; background:#0f0c29; c
 <input type="password" id="adminPass" placeholder="Şifreyi gir">
 <button onclick="loginAdmin()">Giriş Yap</button>
 <p id="loginResult" style="color:red;"></p>
-<div id="lessonAdd" style="display:none; margin-top:15px;">
-<input type="text" id="lessonName" placeholder="Kod adı">
-<select id="lessonCategory">
-<option>JavaScript</option><option>Python</option><option>HTML/CSS</option>
-<option>Java</option><option>Office</option><option>Excel Dashboard</option>
-<option>Word Template</option>
+<div id="codeAdd" style="display:none; margin-top:15px;">
+<input type="text" id="codeName" placeholder="Kod adı">
+<select id="codeCategory">
+<option>JavaScript</option><option>Python</option><option>HTML/CSS</option><option>Java</option><option>Office</option>
 </select>
-<input type="text" id="lessonPDF" placeholder="Dosya adı (kodlar/ klasörü içinde)">
-<button onclick="addLesson()">Kod Ekle</button>
+<input type="text" id="codeFile" placeholder="Dosya adı (kodlar/ klasörü içinde)">
+<button onclick="addCode()">Kod Ekle</button>
 </div>
 <button onclick="show('home')">← Ana Sayfaya Dön</button>
 </div>
@@ -84,53 +82,84 @@ footer { text-align:center; padding:20px; margin-top:30px; background:#0f0c29; c
 <script>
 function show(id){ document.querySelectorAll('.section').forEach(s=>s.style.display='none'); document.getElementById(id).style.display='block'; }
 function copyIban(){navigator.clipboard.writeText(document.getElementById("iban").innerText).then(()=>alert("IBAN kopyalandı"));}
+
+// Kod verileri
 let codes = [
-{kategori:"JavaScript",isim:"To-Do List",pdf:"kodlar/todolist.zip"},
-{kategori:"Python",isim:"Web Scraper",pdf:"kodlar/webscraper.zip"},
-{kategori:"HTML/CSS",isim:"Landing Page",pdf:"kodlar/landingpage.zip"},
-{kategori:"Java",isim:"Calculator App",pdf:"kodlar/calculator.zip"},
-{kategori:"Office",isim:"Excel Dashboard",pdf:"kodlar/exceldashboard.zip"},
-{kategori:"Office",isim:"Word Template",pdf:"kodlar/wordtemplate.zip"}
+{kategori:"JavaScript",isim:"Calculator App",file:"kodlar/calculator.js"},
+{kategori:"JavaScript",isim:"To-Do App",file:"kodlar/todo.js"},
+{kategori:"Python",isim:"Web Scraper",file:"kodlar/scraper.py"},
+{kategori:"Python",isim:"Chat Bot",file:"kodlar/chatbot.py"},
+{kategori:"HTML/CSS",isim:"Landing Page",file:"kodlar/landing.html"},
+{kategori:"HTML/CSS",isim:"Portfolio",file:"kodlar/portfolio.html"},
+{kategori:"Java",isim:"Calculator App",file:"kodlar/calculator.java"},
+{kategori:"Java",isim:"To-Do App",file:"kodlar/todo.java"},
+{kategori:"Java",isim:"Chat Bot",file:"kodlar/chatbot.java"},
+{kategori:"Office",isim:"Excel Dashboard",file:"kodlar/excel.xlsx"},
+{kategori:"Office",isim:"Word Template",file:"kodlar/word.docx"}
 ];
-function updateCategories(){ 
-const catDiv=document.getElementById("categoryList"); 
-catDiv.innerHTML=""; 
-let cats=[...new Set(codes.map(l=>l.kategori))]; 
-cats.forEach(c=>{ 
-let b=document.createElement("button"); 
-b.className="category-btn"; 
-b.innerText=c; 
-b.onclick=()=>showCodes(c); 
-catDiv.appendChild(b); 
-}); 
+
+// Kategorileri oluştur
+function updateCategories(){
+  const catDiv=document.getElementById("categories");
+  catDiv.innerHTML="";
+  let cats=[...new Set(codes.map(c=>c.kategori))];
+  cats.forEach(c=>{
+    let b=document.createElement("button");
+    b.className="category-btn";
+    b.innerText=c;
+    b.onclick=()=>showCodes(c);
+    catDiv.appendChild(b);
+  });
 }
-function showCodes(cat){ 
-const listDiv=document.getElementById("codeList"); 
-listDiv.innerHTML=""; 
-codes.filter(l=>l.kategori===cat).forEach(l=>{ 
-let div=document.createElement("div"); 
-div.className="lesson"; 
-let nameSpan=document.createElement("span"); 
-nameSpan.innerText=l.isim; 
-nameSpan.onclick=()=>window.open(l.pdf,"_blank"); 
-let buyBtn=document.createElement("button"); 
-buyBtn.innerText="Satın Al"; 
-buyBtn.onclick=()=>window.open(l.pdf,"_blank"); 
-div.appendChild(nameSpan); div.appendChild(buyBtn); listDiv.appendChild(div); 
-}); 
+
+// Kategorilere göre kodları göster
+function showCodes(cat){
+  const listDiv=document.getElementById("codesList");
+  listDiv.innerHTML="";
+  codes.filter(c=>c.kategori===cat).forEach(c=>{
+    let div=document.createElement("div");
+    div.className="lesson";
+    let nameSpan=document.createElement("span");
+    nameSpan.innerText=c.isim;
+    nameSpan.onclick=()=>window.open(c.file,"_blank");
+    let buyBtn=document.createElement("button");
+    buyBtn.innerText="Kod Satın Al";
+    buyBtn.onclick=()=>window.open(c.file,"_blank");
+    div.appendChild(nameSpan);
+    div.appendChild(buyBtn);
+    listDiv.appendChild(div);
+  });
 }
-function loginAdmin(){ 
-const pass=document.getElementById("adminPass").value; 
-if(pass==="2332"){ document.getElementById("loginResult").style.color="lime"; document.getElementById("loginResult").innerText="✅ Giriş başarılı!"; document.getElementById("lessonAdd").style.display="block"; } 
-else{ document.getElementById("loginResult").style.color="red"; document.getElementById("loginResult").innerText="❌ Hatalı şifre!"; } 
+
+// Admin giriş
+function loginAdmin(){
+  const pass=document.getElementById("adminPass").value;
+  if(pass==="2332"){
+    document.getElementById("loginResult").style.color="lime";
+    document.getElementById("loginResult").innerText="✅ Giriş başarılı!";
+    document.getElementById("codeAdd").style.display="block";
+  }else{
+    document.getElementById("loginResult").style.color="red";
+    document.getElementById("loginResult").innerText="❌ Hatalı şifre!";
+  }
 }
-function addLesson(){ 
-const name=document.getElementById("lessonName").value.trim(); 
-const cat=document.getElementById("lessonCategory").value; 
-const pdf=document.getElementById("lessonPDF").value.trim(); 
-if(name && pdf){ codes.push({kategori:cat,isim:name,pdf:pdf}); updateCategories(); alert("Kod eklendi!"); document.getElementById("lessonName").value=""; document.getElementById("lessonPDF").value=""; } 
-else{ alert("Lütfen kod adı ve dosya adını girin!"); } 
+
+// Kod ekleme
+function addCode(){
+  const name=document.getElementById("codeName").value.trim();
+  const cat=document.getElementById("codeCategory").value;
+  const file=document.getElementById("codeFile").value.trim();
+  if(name && file){
+    codes.push({kategori:cat,isim:name,file:file});
+    updateCategories();
+    alert("Kod eklendi!");
+    document.getElementById("codeName").value="";
+    document.getElementById("codeFile").value="";
+  }else{
+    alert("Lütfen kod adı ve dosya adını girin!");
+  }
 }
+
 window.onload=()=>updateCategories();
 </script>
 
